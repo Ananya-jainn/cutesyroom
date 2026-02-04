@@ -1,0 +1,23 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+}
+:root{
+    font-family: 'Times New Roman', Times, serif;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+}
+//experience
+#experience{
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    top:0;
+    left:0;
+    overflow:hidden;
+    #experience-canvas{
+    height: 100%;
+    width: 100%;
+    }
+}
