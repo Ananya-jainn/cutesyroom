@@ -3,7 +3,6 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
-import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUniformsLib.js";
 
 // --------------------
 // Canvas
@@ -14,7 +13,7 @@ const canvas = document.querySelector("#experience-canvas");
 // Scene
 // --------------------
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xf7b6c8);
+scene.background = new THREE.Color(0xf2f2f2);
 
 // --------------------
 // Sizes
@@ -25,7 +24,7 @@ const sizes = {
 };
 
 // --------------------
-// Camera
+// Camera (YOUR PERFECT ONE)
 // --------------------
 const camera = new THREE.PerspectiveCamera(
   35,
@@ -33,10 +32,13 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   100
 );
+
 camera.position.set(
--0.49148035239817256,
-21.99322698222242,
-44.76401929700731);
+  -0.49148035239817256,
+  21.99322698222242,
+  44.76401929700731
+);
+
 scene.add(camera);
 
 // --------------------
@@ -46,91 +48,67 @@ const renderer = new THREE.WebGLRenderer({
   canvas,
   antialias: true,
 });
+
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.1;
 
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
 // --------------------
-// Controls (RESTRICTED)
+// Controls
 // --------------------
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
-// FORCE FREE MOVEMENT
-controls.enableRotate = true;
-controls.enableZoom = true;
-controls.enablePan = true;
-
-// VERY IMPORTANT — CLEAR ANY PREVIOUS LIMITS
-controls.minAzimuthAngle = -Infinity;
-controls.maxAzimuthAngle = Infinity;
-controls.minPolarAngle = 0;
-controls.maxPolarAngle = Math.PI;
-
-// apply reset
-controls.update();
 controls.target.set(
--0.9231324494052895, 
-21.68455288510119,
-37.11729455717173
-)
+  -0.9231324494052895,
+  21.68455288510119,
+  37.11729455717173
+);
+controls.update();
 
 // --------------------
-// LIGHTING
+// LIGHTING (GOOD ROOM VIBE)
 // --------------------
 
-// Ambient base
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+// base ambient
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
 scene.add(ambientLight);
 
-// Sun light (main shadows)
-const sunLight = new THREE.DirectionalLight(0xffffff, 3);
+// main sun light
+const sunLight = new THREE.DirectionalLight(0xffffff, 2.8);
 sunLight.position.set(6, 10, 6);
 sunLight.castShadow = true;
 
 sunLight.shadow.mapSize.set(2048, 2048);
 sunLight.shadow.camera.near = 1;
-sunLight.shadow.camera.far = 40;
-sunLight.shadow.camera.left = -10;
-sunLight.shadow.camera.right = 10;
-sunLight.shadow.camera.top = 10;
-sunLight.shadow.camera.bottom = -10;
+sunLight.shadow.camera.far = 50;
+sunLight.shadow.camera.left = -15;
+sunLight.shadow.camera.right = 15;
+sunLight.shadow.camera.top = 15;
+sunLight.shadow.camera.bottom = -15;
 
-// 🔥 STRIPE FIX
+// shadow acne fix
 sunLight.shadow.bias = -0.0003;
 sunLight.shadow.normalBias = 0.03;
 
 scene.add(sunLight);
 scene.add(sunLight.target);
 
-// Window sunlight (RectAreaLight)
-RectAreaLightUniformsLib.init();
-
-const windowLight = new THREE.RectAreaLight(
-  0xfff2e5,
-  4,
-  3,
-  2
-);
-windowLight.position.set(2.5, 2, 1.2);
-windowLight.rotation.y = Math.PI;
-scene.add(windowLight);
-
-// Soft environment tint
-const envLight = new THREE.AmbientLight(0xffd6e8, 0.15);
-scene.add(envLight);
+// warm room fill
+const warmLight = new THREE.AmbientLight(0xffd6e8, 0.25);
+scene.add(warmLight);
 
 // --------------------
-// Floor (Shadow catcher)
+// Floor (shadow catcher)
 // --------------------
 const floor = new THREE.Mesh(
-  new THREE.PlaneGeometry(30, 30),
+  new THREE.PlaneGeometry(50, 50),
   new THREE.ShadowMaterial({ opacity: 0.35 })
 );
 floor.rotation.x = -Math.PI / 2;
@@ -161,10 +139,6 @@ gltfLoader.load(
       if (child.isMesh) {
         child.castShadow = true;
         child.receiveShadow = true;
-
-        if (child.material) {
-          child.material.needsUpdate = true;
-        }
       }
     });
 
@@ -173,7 +147,7 @@ gltfLoader.load(
   },
   undefined,
   (error) => {
-    console.error("❌ LOAD ERROR", error);
+    console.error("❌ MODEL LOAD ERROR", error);
   }
 );
 
@@ -196,20 +170,10 @@ window.addEventListener("resize", () => {
 // --------------------
 const animate = () => {
   controls.update();
-  //console.log(camera.position);
-  //console.log("0000000000");
-  //console.log(controls.target);
-  // subtle life
-  if (roomModel) {
-    roomModel.rotation.y += 0.0004;
-  }
-
-  // gentle sun motion
-  sunLight.position.x = Math.sin(Date.now() * 0.0002) * 6;
-  sunLight.position.z = Math.cos(Date.now() * 0.0002) * 6;
-
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
 };
 
 animate();
+
+

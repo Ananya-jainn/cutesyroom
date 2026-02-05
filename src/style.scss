@@ -1,23 +1,24 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing: border-box;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-:root{
-    font-family: 'Times New Roman', Times, serif;
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
-//experience
-#experience{
-    position: fixed;
-    height: 100%;
-    width: 100%;
-    top:0;
-    left:0;
-    overflow:hidden;
-    #experience-canvas{
-    height: 100%;
-    width: 100%;
-    }
+
+#experience {
+  position: fixed;
+  inset: 0;
 }
+
+#experience-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
